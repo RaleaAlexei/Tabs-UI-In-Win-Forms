@@ -27,7 +27,7 @@ namespace tabs
                 total_tabs++;
                 addtab.Visible = false;
                 addtab.Parent = this;
-                maketab(total_tabs, tabs);
+                tabs.Controls.Add(maketab(total_tabs));
                 addtab.Parent = tabs;
                 addtab.Visible = true;
                 if (item == tabspath + "\\Script1")
@@ -48,7 +48,7 @@ namespace tabs
             Editor.Text = "";
             addtab.Visible = false;
             addtab.Parent = this;
-            maketab(total_tabs, tabs);
+            tabs.Controls.Add(maketab(total_tabs));
             addtab.Parent = tabs;
             addtab.Visible = true;
             current_tab = "Script" + total_tabs;
@@ -59,32 +59,32 @@ namespace tabs
         {
             string txtoplace = "";
             File.WriteAllText(tabspath + "/" + current_tab, Editor.Text);
-            string[] arr = sender.ToString().Split(' ');
-            if (arr[2] == current_tab) { return; }
+            string[] args = sender.ToString().Split(' ');
+            if (args[2] == current_tab) { return; }
             foreach (var itm in Directory.GetFiles(tabspath))
             {
-                if (Path.GetFileName(itm) == arr[2])
+                if (Path.GetFileName(itm) == args[2])
                 {
                     txtoplace = File.ReadAllText(itm);
                 }
             }
             Editor.Text = txtoplace;
-            current_tab = arr[2];
+            current_tab = args[2];
         }
         private void Close_Click(object sender, EventArgs e)
         {
-            string[] arr = sender.ToString().Split(' ');
-            tabs.Controls.Find("tab" + arr[3], false)[0].Parent = null;
+            string[] args = sender.ToString().Split(' ');
+            tabs.Controls.Find("tab" + args[3], false)[0].Parent = null;
             total_tabs--;
-            for (var i = 0; i < total_tabs; i++)
+            for (var fuck = 0; fuck < total_tabs; fuck++)
             {
-                var ind = i + 1;
-                tabs.Controls[i].Controls[0].Text = "Script" + ind;
+                var ind = fuck + 1;
+                tabs.Controls[fuck].Controls[0].Text = "Script" + ind;
             }
             var end = 1;
             foreach (string item in Directory.GetFiles(tabspath))
             {
-                if ((tabspath + "\\Script" + arr[3]) != item)
+                if ((tabspath + "\\Script" + args[3]) != item)
                 {
                     File.Move(item, tabspath + "\\Script" + end);
                     end++;
@@ -96,8 +96,9 @@ namespace tabs
         {
             File.WriteAllText(tabspath + "\\" + current_tab, Editor.Text);
         }
-        void maketab(int tab_number, FlowLayoutPanel parent)
+        private Panel maketab(int tab_number)
         {
+            Console.WriteLine(tab_number);
             Panel tab_background = new Panel();
             Button tab_switch = new Button();
             Button tab_close = new Button();
@@ -148,8 +149,7 @@ namespace tabs
             tab_close.TextAlign = ContentAlignment.MiddleCenter;
             tab_close.UseVisualStyleBackColor = false;
             tab_close.Click += Close_Click;
-
-            parent.Controls.Add(tab_background);
+            return tab_background;
         }
 
     }
